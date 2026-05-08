@@ -1,0 +1,15 @@
+{
+  "name": "smartcloser",
+  "version": "0.2.0",
+  "description": "Smart door closer concept demo + waitlist (Stage 1).",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler pages dev web",
+    "kv:create": "wrangler kv:namespace create SMARTCLOSER_WAITLIST",
+    "kv:list": "wrangler kv:key list --binding SMARTCLOSER_WAITLIST --prefix mail:"
+  },
+  "devDependencies": {
+    "wrangler": "^3.80.0"
+  }
+}

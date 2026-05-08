@@ -1,0 +1,10 @@
+name = "smartcloser"
+compatibility_date = "2026-05-01"
+pages_build_output_dir = "web"
+
+# KV namespace for waitlist signups + per-IP rate limiting.
+# The `id` value below is a placeholder; Task 9 replaces it with the real
+# namespace ID returned by `wrangler kv:namespace create SMARTCLOSER_WAITLIST`.
+[[kv_namespaces]]
+binding = "SMARTCLOSER_WAITLIST"
+id = "REPLACE_WITH_NAMESPACE_ID_AFTER_CREATION"
