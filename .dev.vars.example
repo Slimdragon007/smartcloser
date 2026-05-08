@@ -1,0 +1,2 @@
+# Stage 1 has no local secrets. KV binding is configured via wrangler.toml.
+# Stage 2 may add API keys here (e.g., for device authentication).
