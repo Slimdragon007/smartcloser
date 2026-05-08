@@ -48,8 +48,9 @@ smartcloser/
 ├── web/                       # Cloudflare Pages output directory
 │   ├── index.html             # demo page
 │   ├── favicon.svg
-│   ├── robots.txt
-│   └── functions/api/
+│   └── robots.txt
+├── functions/                 # Cloudflare Pages Functions (project-root sibling)
+│   └── api/
 │       └── waitlist.js        # POST /api/waitlist
 ├── docs/superpowers/
 │   ├── specs/                 # design specs

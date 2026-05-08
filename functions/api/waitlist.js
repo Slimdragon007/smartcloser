@@ -1,7 +1,12 @@
 // POST /api/waitlist
 // Validates email, applies per-IP rate limit, writes signup to KV.
 // Cloudflare Pages auto-routes this file to /api/waitlist.
-// Non-POST methods receive 405 automatically because only onRequestPost is exported.
+// onRequest is the catch-all fallback that 405s any non-POST method
+// (Pages would otherwise fall through to the static SPA on unmatched methods).
+
+export async function onRequest() {
+  return jsonResponse({ error: "Method not allowed" }, 405);
+}
 
 export async function onRequestPost({ request, env }) {
   let body;
