@@ -1,0 +1,669 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SmartCloser | Haslim Engineering</title>
+    <meta
+      name="description"
+      content="An assistive WiFi-enabled device that closes doors automatically. Built for elderly folks and remote workers who need quiet during calls."
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;700;900&display=swap");
+
+      :root {
+        --bg: #09090b;
+        --panel: #121217;
+        --border: #27272a;
+        --accent: #3b82f6;
+        --text-main: #f4f4f5;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: var(--bg);
+        color: var(--text-main);
+        margin: 0;
+      }
+
+      .mono {
+        font-family: "JetBrains Mono", monospace;
+      }
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--border);
+      }
+
+      .json-key {
+        color: #60a5fa;
+      }
+      .json-str {
+        color: #34d399;
+      }
+      .json-num {
+        color: #fbbf24;
+      }
+
+      .btn {
+        padding: 1rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.1em;
+        transition: all 0.2s;
+        border-radius: 2px;
+        border: none;
+        cursor: pointer;
+        display: inline-block;
+        text-decoration: none;
+        text-align: center;
+      }
+
+      .btn-blue {
+        background: var(--accent);
+        color: white;
+      }
+      .btn-blue:hover {
+        background: #2563eb;
+      }
+      .btn-outline {
+        border: 1px solid var(--border);
+        color: #a1a1aa;
+        background: transparent;
+      }
+      .btn-outline:hover {
+        border-color: var(--accent);
+        color: white;
+      }
+
+      ::-webkit-scrollbar {
+        width: 4px;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border);
+      }
+    </style>
+  </head>
+  <body>
+    <header
+      class="px-6 pt-6 pb-4 border-b border-zinc-800 flex justify-between items-end max-w-7xl mx-auto"
+    >
+      <div>
+        <h1 class="text-xl font-black tracking-tighter uppercase">
+          SmartCloser_Proto_v0.2
+        </h1>
+        <p
+          class="text-[10px] text-zinc-500 font-bold uppercase tracking-[0.2em] mono"
+        >
+          Haslim Engineering
+        </p>
+      </div>
+      <div class="text-right mono text-[10px] space-y-1">
+        <div class="flex items-center justify-end gap-2 text-green-500">
+          <span
+            class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"
+          ></span>
+          <span>ESP32_LINK_ACTIVE</span>
+        </div>
+        <p class="text-zinc-600">ID: AZ-0926-ALPHA</p>
+      </div>
+    </header>
+
+    <section class="px-6 py-20 max-w-4xl mx-auto">
+      <h2
+        class="text-5xl md:text-7xl font-black tracking-tighter mb-6 leading-none"
+      >
+        A smarter<br />door closer.
+      </h2>
+      <p class="text-lg text-zinc-400 max-w-2xl mb-8 leading-relaxed">
+        An assistive WiFi-enabled device that closes doors automatically. Built
+        for elderly folks who struggle with heavy doors and remote workers who
+        need quiet during calls.
+      </p>
+      <a href="#waitlist" class="btn btn-blue">Get build updates</a>
+    </section>
+
+    <section class="px-6 py-6 border-t border-b border-zinc-800 bg-zinc-900/40">
+      <p class="max-w-4xl mx-auto text-zinc-400 italic text-sm">
+        What you're looking at below is a live kinematic simulation of the
+        SmartCloser prototype. The math models real motor behavior, the
+        telemetry mirrors what the device will report once on-device firmware is
+        complete. The unit ships when it's ready.
+      </p>
+    </section>
+
+    <section class="p-6 max-w-7xl mx-auto">
+      <div class="grid grid-cols-12 gap-6" style="height: 700px">
+        <div class="col-span-7 flex flex-col gap-6 min-h-0">
+          <div
+            class="panel flex-1 relative rounded-md overflow-hidden bg-black flex items-center justify-center"
+          >
+            <div class="absolute top-4 left-4 flex items-center gap-2">
+              <div class="w-1 h-1 bg-blue-500 rounded-full"></div>
+              <span
+                class="text-[9px] font-black text-zinc-600 uppercase tracking-widest mono"
+                >Kinematic solver v1.1</span
+              >
+            </div>
+
+            <svg id="canvas" viewBox="0 0 800 500" class="w-full h-full p-10">
+              <text
+                x="100"
+                y="80"
+                fill="#3f3f46"
+                font-size="14"
+                font-weight="900"
+                letter-spacing="2"
+              >
+                INTERIOR (PUSH SIDE)
+              </text>
+              <text
+                x="100"
+                y="170"
+                fill="#3f3f46"
+                font-size="14"
+                font-weight="900"
+                letter-spacing="2"
+              >
+                EXTERIOR (PULL SIDE)
+              </text>
+
+              <path
+                d="M 650 120 A 350 350 0 0 1 180.3 448.9"
+                fill="none"
+                stroke="#18181b"
+                stroke-width="4"
+                stroke-dasharray="8 8"
+              />
+              <text
+                x="400"
+                y="440"
+                fill="#27272a"
+                font-size="12"
+                font-family="monospace"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                SWING PATH
+              </text>
+
+              <rect
+                x="0"
+                y="105"
+                width="300"
+                height="30"
+                fill="#18181b"
+                stroke="#27272a"
+                stroke-width="2"
+              />
+              <rect
+                x="650"
+                y="105"
+                width="150"
+                height="30"
+                fill="#18181b"
+                stroke="#27272a"
+                stroke-width="2"
+              />
+
+              <rect
+                x="300"
+                y="105"
+                width="350"
+                height="30"
+                fill="transparent"
+                stroke="#27272a"
+                stroke-dasharray="4 4"
+                stroke-width="2"
+              />
+              <text
+                x="475"
+                y="125"
+                fill="#3f3f46"
+                font-size="12"
+                font-family="monospace"
+                font-weight="bold"
+                text-anchor="middle"
+                letter-spacing="4"
+              >
+                PASSAGEWAY
+              </text>
+
+              <rect
+                x="380"
+                y="80"
+                width="200"
+                height="25"
+                fill="#27272a"
+                stroke="#3f3f46"
+              />
+
+              <rect
+                x="400"
+                y="65"
+                width="160"
+                height="30"
+                rx="1"
+                fill="#000"
+                stroke="#3b82f6"
+              />
+              <text
+                x="410"
+                y="83"
+                fill="#3b82f6"
+                font-size="8"
+                font-family="monospace"
+                font-weight="bold"
+              >
+                PROTOTYPE MK1
+              </text>
+
+              <line
+                id="door-panel"
+                x1="300"
+                y1="120"
+                x2="300"
+                y2="450"
+                stroke="rgba(59, 130, 246, 0.2)"
+                stroke-width="15"
+              />
+              <circle
+                cx="300"
+                cy="120"
+                r="6"
+                fill="#18181b"
+                stroke="#71717a"
+                stroke-width="2"
+              />
+
+              <line
+                id="arm-1"
+                x1="480"
+                y1="80"
+                x2="400"
+                y2="180"
+                stroke="#71717a"
+                stroke-width="6"
+                stroke-linecap="round"
+              />
+              <line
+                id="arm-2"
+                x1="400"
+                y1="180"
+                x2="300"
+                y2="280"
+                stroke="#a1a1aa"
+                stroke-width="4"
+                stroke-linecap="round"
+              />
+
+              <circle cx="480" cy="80" r="4" fill="#000" stroke="#3b82f6" />
+              <circle
+                id="elbow"
+                cx="400"
+                cy="180"
+                r="4"
+                fill="#27272a"
+                stroke="#71717a"
+              />
+              <circle
+                id="bracket"
+                cx="300"
+                cy="280"
+                r="3.5"
+                fill="#000"
+                stroke="#3b82f6"
+              />
+
+              <text
+                id="angle-val"
+                x="325"
+                y="95"
+                fill="#3b82f6"
+                font-size="14"
+                font-weight="900"
+                opacity="0.4"
+              >
+                0.0°
+              </text>
+            </svg>
+
+            <div class="absolute bottom-6 left-6">
+              <p
+                class="text-[8px] font-bold text-zinc-600 uppercase mb-1 mono tracking-widest"
+              >
+                Logic State
+              </p>
+              <div
+                id="state-box"
+                class="text-xs font-bold text-zinc-400 mono tracking-tighter"
+              >
+                STATE_READY
+              </div>
+            </div>
+          </div>
+
+          <div class="panel p-6 rounded-md">
+            <div class="grid grid-cols-3 gap-4">
+              <button onclick="drive('OPEN')" class="btn btn-blue">
+                Open Sequence
+              </button>
+              <button onclick="drive('CLOSE')" class="btn btn-outline">
+                Close Sequence
+              </button>
+              <button
+                onclick="emergency()"
+                class="btn border border-red-900/40 text-red-500 text-[10px] hover:bg-red-500/10"
+              >
+                Sim Obstruction
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-span-5 flex flex-col gap-6 min-h-0">
+          <div class="panel flex-1 flex flex-col rounded-md overflow-hidden">
+            <div
+              class="px-4 py-2 border-b border-zinc-800 bg-black/40 flex justify-between items-center"
+            >
+              <span
+                class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest mono"
+                >Serial Telemetry (JSON)</span
+              >
+              <span class="text-[8px] text-zinc-700 mono">100Hz POLLING</span>
+            </div>
+            <div class="flex-1 p-6 overflow-y-auto bg-black/20">
+              <pre
+                id="telemetry-out"
+                class="text-[11px] mono leading-relaxed"
+              ></pre>
+            </div>
+          </div>
+
+          <div class="panel p-6 rounded-md grid grid-cols-2 gap-4">
+            <div class="bg-black p-4 border border-zinc-800 rounded-sm">
+              <p class="text-[8px] font-bold text-zinc-600 uppercase mb-2">
+                Motor Amps
+              </p>
+              <div class="flex items-baseline gap-1">
+                <span id="amp-read" class="text-2xl font-black text-white mono"
+                  >0.42</span
+                >
+                <span class="text-zinc-600 text-[10px] font-bold">A</span>
+              </div>
+            </div>
+            <div class="bg-black p-4 border border-zinc-800 rounded-sm">
+              <p class="text-[8px] font-bold text-zinc-600 uppercase mb-2">
+                Phase
+              </p>
+              <p id="phase-read" class="text-sm font-bold text-blue-500 mono">
+                IDLE
+              </p>
+              <p class="text-[8px] text-zinc-600 mt-1 uppercase font-bold">
+                Closed-Loop
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="waitlist" class="px-6 py-20 max-w-2xl mx-auto">
+      <h2 class="text-4xl md:text-5xl font-black tracking-tighter mb-4">
+        Be the first to know.
+      </h2>
+      <p class="text-zinc-400 mb-8">
+        We'll email when there's a working unit. No marketing, no spam, just
+        build progress.
+      </p>
+      <form id="waitlist-form" class="flex flex-col sm:flex-row gap-2">
+        <input
+          type="email"
+          name="email"
+          required
+          placeholder="you@example.com"
+          class="flex-1 bg-zinc-900 border border-zinc-800 rounded px-4 py-3 text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-blue-500"
+          autocomplete="email"
+        />
+        <button type="submit" class="btn btn-blue">Notify me</button>
+      </form>
+      <p
+        id="waitlist-msg"
+        class="mt-4 text-sm text-zinc-400"
+        aria-live="polite"
+      ></p>
+    </section>
+
+    <footer
+      class="px-6 py-6 border-t border-zinc-800 max-w-7xl mx-auto flex flex-col sm:flex-row justify-between gap-2 text-xs text-zinc-500 mono"
+    >
+      <span>© 2026 Haslim Engineering</span>
+      <span
+        >v0.2 prototype ·
+        <a
+          href="https://github.com/Slimdragon007/smartcloser"
+          class="hover:text-zinc-300"
+          >GitHub</a
+        ></span
+      >
+    </footer>
+
+    <script>
+      const state = {
+        id: "SC-V2-ALPHA",
+        logic: "STATE_READY",
+        phase: "IDLE",
+        pos_pct: 0,
+        amps: 0.42,
+        temp: 36.8,
+        fault: false,
+        timestamp: Date.now(),
+      };
+
+      const HINGE = { x: 300, y: 120 };
+      const SHAFT = { x: 480, y: 80 };
+      const BRACKET_RADIUS = 180;
+      const ARM1_LEN = 135;
+      const ARM2_LEN = 155;
+
+      const doorPanel = document.getElementById("door-panel");
+      const arm1 = document.getElementById("arm-1");
+      const arm2 = document.getElementById("arm-2");
+      const elbow = document.getElementById("elbow");
+      const bracket = document.getElementById("bracket");
+      const angleVal = document.getElementById("angle-val");
+      const telemetryOut = document.getElementById("telemetry-out");
+      const stateBox = document.getElementById("state-box");
+      const ampRead = document.getElementById("amp-read");
+      const phaseRead = document.getElementById("phase-read");
+
+      function solveKinematics() {
+        const angleDeg = (state.pos_pct / 100) * 110;
+        const angleRad = (angleDeg * Math.PI) / 180;
+
+        const bX = HINGE.x + BRACKET_RADIUS * Math.cos(angleRad);
+        const bY = HINGE.y + BRACKET_RADIUS * Math.sin(angleRad);
+
+        const dx = bX - SHAFT.x;
+        const dy = bY - SHAFT.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist <= ARM1_LEN + ARM2_LEN) {
+          const a =
+            (ARM1_LEN * ARM1_LEN - ARM2_LEN * ARM2_LEN + dist * dist) /
+            (2 * dist);
+          const h = Math.sqrt(Math.max(0, ARM1_LEN * ARM1_LEN - a * a));
+          const x2 = SHAFT.x + (a * dx) / dist;
+          const y2 = SHAFT.y + (a * dy) / dist;
+
+          const eX = x2 + (h * dy) / dist;
+          const eY = y2 - (h * dx) / dist;
+
+          doorPanel.setAttribute("x2", HINGE.x + 350 * Math.cos(angleRad));
+          doorPanel.setAttribute("y2", HINGE.y + 350 * Math.sin(angleRad));
+
+          arm1.setAttribute("x2", eX);
+          arm1.setAttribute("y2", eY);
+          arm2.setAttribute("x1", eX);
+          arm2.setAttribute("y1", eY);
+          arm2.setAttribute("x2", bX);
+          arm2.setAttribute("y2", bY);
+
+          elbow.setAttribute("cx", eX);
+          elbow.setAttribute("cy", eY);
+          bracket.setAttribute("cx", bX);
+          bracket.setAttribute("cy", bY);
+
+          angleVal.textContent = angleDeg.toFixed(1) + "°";
+        }
+
+        updateData();
+      }
+
+      const TOKEN_PATTERN =
+        /("(?:\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(?:\s*:)?|\b(?:true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g;
+
+      function classifyToken(token) {
+        if (token.startsWith('"')) {
+          return token.endsWith(":") ? "json-key" : "json-str";
+        }
+        return "json-num";
+      }
+
+      function renderTelemetry() {
+        const json = JSON.stringify(state, null, 4);
+
+        while (telemetryOut.firstChild) {
+          telemetryOut.removeChild(telemetryOut.firstChild);
+        }
+
+        let lastIndex = 0;
+        for (const match of json.matchAll(TOKEN_PATTERN)) {
+          if (match.index > lastIndex) {
+            telemetryOut.appendChild(
+              document.createTextNode(json.substring(lastIndex, match.index)),
+            );
+          }
+          const span = document.createElement("span");
+          span.className = classifyToken(match[0]);
+          span.textContent = match[0];
+          telemetryOut.appendChild(span);
+          lastIndex = match.index + match[0].length;
+        }
+        if (lastIndex < json.length) {
+          telemetryOut.appendChild(
+            document.createTextNode(json.substring(lastIndex)),
+          );
+        }
+      }
+
+      function updateData() {
+        state.timestamp = Date.now();
+        renderTelemetry();
+        stateBox.textContent = state.logic;
+        stateBox.className = `text-xs font-bold mono tracking-tighter ${state.fault ? "text-red-500" : "text-zinc-400"}`;
+        ampRead.textContent = state.amps.toFixed(2);
+        phaseRead.textContent = state.phase;
+      }
+
+      let moveInt;
+      window.drive = (dir) => {
+        if (moveInt || state.fault) return;
+
+        moveInt = setInterval(() => {
+          if (dir === "OPEN") {
+            state.logic = "STATE_OPENING";
+            state.phase = "DRIVE";
+            state.pos_pct += 0.8;
+            state.amps = 1.35 + Math.random() * 0.1;
+            if (state.pos_pct >= 100) {
+              state.pos_pct = 100;
+              stop();
+            }
+          } else {
+            if (state.pos_pct > 18) {
+              state.logic = "STATE_CLOSING";
+              state.phase = "SWEEP";
+              state.pos_pct -= 0.8;
+              state.amps = 1.15 + Math.random() * 0.1;
+            } else {
+              state.phase = "LATCHING";
+              state.pos_pct -= 0.15;
+              state.amps = 2.05 + Math.random() * 0.4;
+            }
+            if (state.pos_pct <= 0) {
+              state.pos_pct = 0;
+              stop();
+            }
+          }
+          solveKinematics();
+        }, 16);
+      };
+
+      function stop() {
+        clearInterval(moveInt);
+        moveInt = null;
+        state.logic = "STATE_READY";
+        state.phase = "IDLE";
+        state.amps = 0.42;
+        solveKinematics();
+      }
+
+      window.emergency = () => {
+        clearInterval(moveInt);
+        moveInt = null;
+        state.logic = "FAULT_OBSTRUCTION";
+        state.phase = "HALTED";
+        state.fault = true;
+        state.amps = 2.92;
+        updateData();
+      };
+
+      document
+        .getElementById("waitlist-form")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const form = e.target;
+          const msg = document.getElementById("waitlist-msg");
+          const email = form.email.value.trim();
+
+          msg.textContent = "Submitting…";
+          msg.className = "mt-4 text-sm text-zinc-400";
+
+          try {
+            const res = await fetch("/api/waitlist", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email }),
+            });
+
+            if (res.ok) {
+              msg.textContent = "You're on the list. We'll be in touch.";
+              msg.className = "mt-4 text-sm text-green-400";
+              form.reset();
+            } else if (res.status === 429) {
+              msg.textContent = "Too many requests. Try again later.";
+              msg.className = "mt-4 text-sm text-red-400";
+            } else if (res.status === 400) {
+              msg.textContent = "That email looks invalid. Try again.";
+              msg.className = "mt-4 text-sm text-red-400";
+            } else {
+              throw new Error("Server error");
+            }
+          } catch (err) {
+            msg.textContent =
+              "Something went wrong. Try again or email m.haslim@gmail.com directly.";
+            msg.className = "mt-4 text-sm text-red-400";
+          }
+        });
+
+      solveKinematics();
+    </script>
+  </body>
+</html>
