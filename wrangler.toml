@@ -7,4 +7,4 @@ pages_build_output_dir = "web"
 # namespace ID returned by `wrangler kv:namespace create SMARTCLOSER_WAITLIST`.
 [[kv_namespaces]]
 binding = "SMARTCLOSER_WAITLIST"
-id = "REPLACE_WITH_NAMESPACE_ID_AFTER_CREATION"
+id = "ca90aacccbe443dc8e9d28e1e602088f"
